@@ -23,9 +23,10 @@ I tried to use only the default programs that can be found in nearly any Linux d
 
 ## Getting Started
 
-Nothing to do apart downloading the shell script and installing Tor if not already done. If the script is not executable make it so:
+Aside from installing Tor, run the following commands to download the script and make it executable:
 ```bash
-chmod +x dgms
+wget https://raw.githubusercontent.com/tejashah88/DGMS/master/dgms.sh
+chmod +x dgms.sh
 ```
 ## Examples
 
@@ -40,17 +41,17 @@ chmod +x dgms
 If you don't want to search for latitude/longitude coordinates by yourself, this script offers the possibility to enter the address directly:
 
 ```bash
-./dgms --address algiers --zoom 15
+./dgms.sh --address algiers --zoom 15
 # OR using shortcuts
-./dgms -ad algiers -z 15
+./dgms.sh -ad algiers -z 15
 ```
 
 This command will download a map (file `algiers.html`) centered at Algiers, zoomed at 15, the width and height of the map will be (approximatively[^approx]) the default ones (±0.01 for both longitude and latitude). You noticed that the script displayed an interactive screen asking for the result to choose (in that case there was only one result), it also offers the possibility to search again `[R]` or to abort `[A]`. If you are sure that the returned first result in the interactive screen is what you want (for example in the second of subsequent tentative) you can use the argument `--lucky`:
 
 ```bash
-./dgms --address algiers --zoom 15 --lucky
+./dgms.sh --address algiers --zoom 15 --lucky
 # OR using shortcuts
-./dgms -ad algiers -z 15 -lk
+./dgms.sh -ad algiers -z 15 -lk
 ```
 
 This will prevent the script to display an interactive screen and pass directly to the downloading process. However, if you are not sure that the first result will be the right one, do not use `--lucky`, try `-ad paris` to see.
@@ -58,40 +59,40 @@ This will prevent the script to display an interactive screen and pass directly 
 You can also choose to download a range of zoom, beware that the more the zoom is bigger the more there will be tiles, it can reach hundreds of thousands of tiles[^graylisted]:
 
 ```bash
-./dgms --address bejaia --min-zoom 2 --max-zoom 16 --lucky
+./dgms.sh --address bejaia --min-zoom 2 --max-zoom 16 --lucky
 # OR using shortcuts
-./dgms -ad bejaia -mz 2 -Mz 16 -lk
+./dgms.sh -ad bejaia -mz 2 -Mz 16 -lk
 ```
 
 If you want to specify by yourself the name of the created HTML file, use the argument `--name`:
 
 ```bash
-./dgms --address bejaia --min-zoom 2 --max-zoom 16 --lucky --name bougie
+./dgms.sh --address bejaia --min-zoom 2 --max-zoom 16 --lucky --name bougie
 # OR using shortcuts
-./dgms -ad bejaia -mz 2 -Mz 16 -lk -n bougie
+./dgms.sh -ad bejaia -mz 2 -Mz 16 -lk -n bougie
 ```
 
-You can choose the language of the displayed addresses in the layers[^lang] (by default the script will use the default system language found in the `$LANG` variable), for example, if we want to use the Russian language:
+You can choose the language of the displayed addresses in the layers[^lang](by default the script will use the default system language found in the `$LANG` variable), for example, if we want to use the Russian language:
 
 ```bash
-./dgms --address bejaia --min-zoom 2 --max-zoom 16 --lucky --name bougie --language ru
+./dgms.sh --address bejaia --min-zoom 2 --max-zoom 16 --lucky --name bougie --language ru
 # OR using shortcuts
-./dgms -ad bejaia -mz 2 -Mz 16 -lk -n bougie -l ru
+./dgms.sh -ad bejaia -mz 2 -Mz 16 -lk -n bougie -l ru
 ```
 You'll certainly need to scrape a wider region than the ±0.01x±0.01 default one, to do this use *deviations*:
 
 ```bash
-./dgms --address "Oran, algeria" --min-zoom 2 --max-zoom 13 --longitude-deviation 0.05 --latitude-deviation 0.05 --lucky --name oran
+./dgms.sh --address "Oran, algeria" --min-zoom 2 --max-zoom 13 --longitude-deviation 0.05 --latitude-deviation 0.05 --lucky --name oran
 # OR using shortcuts
-./dgms -ad "Oran, algeria" -mz 2 -Mz 13 -lod 0.05 -lad 0.05 -lk -n oran
+./dgms.sh -ad "Oran, algeria" -mz 2 -Mz 13 -lod 0.05 -lad 0.05 -lk -n oran
 ```
 
 If you don't need the addresses layer, you can use `--only-sat` argument to tell the script to not scrape layers:
 
 ```bash
-./dgms --address Temouchent --min-zoom 2 --max-zoom 16 --lucky --only-sat
+./dgms.sh --address Temouchent --min-zoom 2 --max-zoom 16 --lucky --only-sat
 # OR using shortcuts
-./dgms -ad Temouchent -mz 2 -Mz 16 -lk -os
+./dgms.sh -ad Temouchent -mz 2 -Mz 16 -lk -os
 ```
 
 [^approx]: The map is made of tiles of fixed size, these tiles begin and end at discrete values of latitude/longitude coordinates, thus a given boundary value of latitude/longitude may be inside a tile (not on its corner), however, this tile will be entirely downloaded and displayed on the screen, which will always make the width/height values greater or equal to ±0.01.
@@ -105,9 +106,9 @@ If you don't need the addresses layer, you can use `--only-sat` argument to tell
 If you have the coordinates of a particular place that has no address, you can use the `--latitude` and `--longitude` arguments (stop this command immediately after launch):
 
 ```bash
-./dgms --latitude 15.298569 --longitude 19.429733 --zoom 23 --only-sat --name super_zoom
+./dgms.sh --latitude 15.298569 --longitude 19.429733 --zoom 23 --only-sat --name super_zoom
 # OR using shortcuts
-./dgms -la 15.298569 -lo 19.429733 -z 23 -os -n super_zoom
+./dgms.sh -la 15.298569 -lo 19.429733 -z 23 -os -n super_zoom
 ```
 
 You'll notice the very big number of tiles to be downloaded
@@ -119,17 +120,17 @@ You'll notice the very big number of tiles to be downloaded
 This is of course not impossible with our script, but it will take time and needs to pass through Tor, let's reduce the deviations:
 
 ```bash
-./dgms --latitude 15.298569 --longitude 19.429733 --zoom 22 --only-sat --name super_zoom --latitude-deviation 0.0001 --longitude-deviation 0.0001
+./dgms.sh --latitude 15.298569 --longitude 19.429733 --zoom 22 --only-sat --name super_zoom --latitude-deviation 0.0001 --longitude-deviation 0.0001
 # OR using shortcuts
-./dgms -la 15.298569 -lo 19.429733 -z 22 -os -n super_zoom -lad 0.0001 -lod 0.0001
+./dgms.sh -la 15.298569 -lo 19.429733 -z 22 -os -n super_zoom -lad 0.0001 -lod 0.0001
 ```
 
 This will scrape one of the closest zooms available on Google maps (there are no available addresses at this zoom and mainly on this region, this is why `-os` have been used). If you don't specify the `--name` argument value, the script will use the coordinates and zoom to build the HTML file name, for example, this command:
 
 ```bash
-./dgms --latitude 15.298569 --longitude 19.429733 --zoom 22 --only-sat --latitude-deviation 0.0001 --longitude-deviation 0.0001
+./dgms.sh --latitude 15.298569 --longitude 19.429733 --zoom 22 --only-sat --latitude-deviation 0.0001 --longitude-deviation 0.0001
 # OR using shortcuts
-./dgms -la 15.298569 -lo 19.429733 -z 22 -os -lad 0.0001 -lod 0.0001
+./dgms.sh -la 15.298569 -lo 19.429733 -z 22 -os -lad 0.0001 -lod 0.0001
 ```
 will create an HTML file names `15.298569,19.429733,22.html`.
 
@@ -138,17 +139,17 @@ will create an HTML file names `15.298569,19.429733,22.html`.
 To tell the script to use Tor add the argument `--use-tor` together with the two arguments `-start-port` and `--end-port` which define the range of ports that will be used:
 
 ```bash
-./dgms --latitude 21.422352 --longitude 39.826338 --min-zoom 2 --max-zoom 18 --name mecca --latitude-deviation 0.05 --longitude-deviation 0.05 --use-tor --start-port 7000 --end-port 7009
+./dgms.sh --latitude 21.422352 --longitude 39.826338 --min-zoom 2 --max-zoom 18 --name mecca --latitude-deviation 0.05 --longitude-deviation 0.05 --use-tor --start-port 7000 --end-port 7009
 # OR using shortcuts
-./dgms -la 21.422352 -lo 39.826338 -mz 2 -Mz 18 -n mecca -lad 0.05 -lod 0.05 -T -sp 7000 -ep 7009
+./dgms.sh -la 21.422352 -lo 39.826338 -mz 2 -Mz 18 -n mecca -lad 0.05 -lod 0.05 -T -sp 7000 -ep 7009
 ```
 
 This can take some times (8846 tiles to download) but it will **certainly** download them (if a Tor node is graylisted we change it), to speed things we can increase the number of simultaneous downloads (which is by default 4) and/or add Tor instances (increase the ports range):
 
 ```bash
-./dgms --latitude 21.422352 --longitude 39.826338 --min-zoom 2 --max-zoom 18 --name mecca --latitude-deviation 0.05 --longitude-deviation 0.05 --use-tor --start-port 7000 --end-port 7019 --max-connections 15
+./dgms.sh --latitude 21.422352 --longitude 39.826338 --min-zoom 2 --max-zoom 18 --name mecca --latitude-deviation 0.05 --longitude-deviation 0.05 --use-tor --start-port 7000 --end-port 7019 --max-connections 15
 # OR using shortcuts
-./dgms -la 21.422352 -lo 39.826338 -mz 2 -Mz 18 -n mecca -lad 0.05 -lod 0.05 -T -sp 7000 -ep 7019 -mc 15
+./dgms.sh -la 21.422352 -lo 39.826338 -mz 2 -Mz 18 -n mecca -lad 0.05 -lod 0.05 -T -sp 7000 -ep 7019 -mc 15
 ```
 This will make the script do 15 simultaneous downloads at the same time (it may consume a lot of resources depending on your machine). When the ports range is somewhat big, the Tor initialization can take several minutes to achieve, but when it's launched, you will notice that the number of tiles will increase rapidly!
 
