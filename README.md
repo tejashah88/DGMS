@@ -6,6 +6,17 @@ This tool will create HTML files that you can directly open on browsers (PC and 
 
 The number of image files (tiles) can reach a very big value, this can lead to a very long time of copying (from PC to SD card for example). If you do not need a map that covers a very large area, choose to put this script in different folders to split images files to the script necessary. Nonetheless, having a very large amount of tiles in the same directory may prove useful, and this script can deal with this kind of challenge.
 
+## Table of Contents
+* [Dependencies](#dependencies)
+* [Getting Started](#getting-started)
+* [Examples](#examples)
+  * [Without using Tor (not recommended!)](#without-using-tor-not-recommended)
+    * [Use the builtin search engine](#use-the-builtin-search-engine)
+    * [Specify latitude/longitude manually](#specify-latitudelongitude-manually)
+  * [Using Tor](#using-tor)
+* [Known bugs](#known-bugs)
+* [TODO](#todo)
+
 ## Dependencies
 
 I tried to use only the default programs that can be found in nearly any Linux distribution nowadays, of course, installing [Tor program](https://www.torproject.org/download/download.html.en "Click to download Tor") is still needed for the ones who did not installed it yet. The programs needed are `tor`, `wget`, `ls`, `cp`, `cat`, `xmllint`, `sed`, `echo`, `printf`, `read`, `bc`, `touch`, `export`, `nc`, `awk`, `grep`, `sleep`, `rm`, `basename`, `sort`, `head`, `identify`, `mkdir`, `cut`, `jobs`. The shell version used here is the Bourne-Again Shell `/bash`.
