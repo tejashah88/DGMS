@@ -2,7 +2,7 @@
 
 function check {
 	programs="$@"
-	for p in ${programs}; do 
+	for p in ${programs}; do
 		if ! type $p >/dev/null 2>&1; then
 			echo "This program needs \"$p\" but it's not installed, Aborting."
 			exit 1
@@ -52,8 +52,8 @@ cat <<HTML > $name.html
 				height: 256px;
 				text-align: center;
 				vertical-align: middle;
-				/*border-width:1px; 
-				border-style:solid; 
+				/*border-width:1px;
+				border-style:solid;
 				border-color:red;*/
 			}
 			.draggable {
@@ -188,7 +188,7 @@ cat <<HTML > $name.html
 
 		function compute_coords(z) {
 			/*
-			 * function that compute the new coordinates 
+			 * function that compute the new coordinates
 			 * at the center of the window
 			 */
 			var xcenter = \$("#cross").offset().left + 15;				// get the position of the cross (by default at the center)
@@ -212,7 +212,7 @@ cat <<HTML > $name.html
 			var latlong = pureXY2latlong(z,pureX,pureY);
 			var long = latlong.long;									// get the current latitude and longitude coordinates on the center
 			var lat = latlong.lat;
-			long = Math.round(long*1000000)/1000000;					// round them to float with 6 digits 
+			long = Math.round(long*1000000)/1000000;					// round them to float with 6 digits
 			lat = Math.round(lat*1000000)/1000000;
 			\$("#lat").html(lat.format(6));								// format them to float with 6 digits and display them at the top of screen
 			\$("#long").html(long.format(6));
@@ -263,7 +263,7 @@ cat <<HTML > $name.html
 				 */
 				if(l > 0) {
 					/*
-					 * get the table height (number of TR) then APPEND to 
+					 * get the table height (number of TR) then APPEND to
 					 * each TR a TD with the coord of the FIRST
 					 * TD in the first TR MINUS 1
 					 */
@@ -283,7 +283,7 @@ cat <<HTML > $name.html
 				}
 				if(r > 0) {
 					/*
-					 * get the table height (number of TR) then PREPEND to 
+					 * get the table height (number of TR) then PREPEND to
 					 * each TR a TD with the coord of the LAST
 					 * TD in the first TR PLUS 1
 					 */
@@ -359,16 +359,16 @@ cat <<HTML > $name.html
 					\$(this).grow();						// once the drag has finished, expend the TABLE
 				}
 			});
-			
+
 			var overlay = \$('<div id="overlay"></div>');	// add an overlay at the top of the screen, with two buttons and two spans
 			overlay
 				.append(\$("#zoom"))
 				.append('<div id="coords" style="display: inline; float: left; width: auto; height: 100%"><span class="coords" id="lat"></span><br/><span class="coords" id="long"></span></div><div style="display: inline; float: left; width: auto; height: 100%"><span id="current_zoom" id="lat">$Mz</span></div>');
-			
+
 			/*
 			 * THE FIRST ZOOM WICH WILL DISPLAY THE CENTER TILE
 			 * (THE ONE COORDINATES YOU CHOOSE IN BASH SCRIPT BELONG TO)
-			 * THEN EXPEND IT, PASS THE TRUE ARGUMENT SO NO SLIDING 
+			 * THEN EXPEND IT, PASS THE TRUE ARGUMENT SO NO SLIDING
 			 * (CORRECTION OF COORDINATES) WILL BE DONE (NO NEED TO IT!)
 			 */
 
@@ -454,18 +454,18 @@ HTML
 function help {
 cat <<HELP
 USAGE ./dgms [--longitude ... --latitude ... | --address ... [--lucky]]
-	[--zoom ... | --min-zoom ... --max-zoom] [--name ...] 
-	[--longitude-deviation ...] [--latitude-deviation ...] 
-	[--use-tor --start-port ... --end-port ... [--max-connections ...]] 
+	[--zoom ... | --min-zoom ... --max-zoom] [--name ...]
+	[--longitude-deviation ...] [--latitude-deviation ...]
+	[--use-tor --start-port ... --end-port ... [--max-connections ...]]
 	[--only-sat] [--language ...]
 
-Distributed Google Maps Scraper is a tool that let you download maps  from 
+Distributed Google Maps Scraper is a tool that let you download maps  from
 Google either directly (not recommended) or using Tor.
 
   -n,	--name 			HTML file name, if not set, coordinates will be
   				  used to create a filename.
   -ad,	--address 		If set, the script will attempt to find
-  				  coordinates of that address, if multiple 
+  				  coordinates of that address, if multiple
   				  results are found, an interactive screen will
   				  be displayed.
   -lk,	--lucky			Works with --address and makes the script choose
@@ -473,11 +473,11 @@ Google either directly (not recommended) or using Tor.
   -la,	--latitude 		Latitude of the center of map.
   -lo,	--longitude 		Longitude of the center of the map.
   -z,	--zoom 			Zoom of the map.
-  -lod,	--longitude-deviation 	The deviation from the center of the map to the 
-  				  west and east sides, if not set the value 0.01 
+  -lod,	--longitude-deviation 	The deviation from the center of the map to the
+  				  west and east sides, if not set the value 0.01
   				  will be taken.
-  -lad,	--latitude-deviation 	The deviation from the center of the map to the 
-  				  south and nord sides, if not set the value 0.01 
+  -lad,	--latitude-deviation 	The deviation from the center of the map to the
+  				  south and nord sides, if not set the value 0.01
   				  will be taken.
   -mz,	--min-zoom 		The minimum zoom that will be scraped (used with
   				  -Mz).
@@ -485,10 +485,10 @@ Google either directly (not recommended) or using Tor.
   				  -mz).
   -T,	--use-tor 		Use Tor proxy (used with -ep and -sp)
   -sp,	--start-port 		If -T is chosen, affects the starting port of
-  				  the range of ports that will be used by the 
+  				  the range of ports that will be used by the
   				  multiple instances of Tor (used with -ep).
   -ep,	--end-port 		If -T is chosen, affects the ending port of
-  				  the range of ports that will be used by the 
+  				  the range of ports that will be used by the
   				  multiple instances of Tor (used with -sp).
   -mc,	--max-connections 	The number of simultaneous parallel instances
   				  of downloads, if not set a default value of 4
@@ -551,7 +551,7 @@ function search {
 		echo "What did you do?!! Aborting ..."
 		exit 1
 	fi
-	
+
 	unset IFS
 }
 
@@ -694,12 +694,12 @@ cat <<TOR
  | A number of $(echo -e "\e[31m\e[1m")$(echo "$max_connections")$(echo -e "\e[0m") parallel connections will be set each time.
 
 TOR
-else 
+else
 cat <<NOTOR
- | You chose $(echo -e "\e[31m\e[1m")NOT TO USE$(echo -e "\e[0m") Tor proxies, please be aware 
- | that a greylisting measure will be taken 
- | by Google soon (likely a captcha verification), this script cannot 
- | (yet) resolve captchas so it will stop as soon as a captcha points 
+ | You chose $(echo -e "\e[31m\e[1m")NOT TO USE$(echo -e "\e[0m") Tor proxies, please be aware
+ | that a greylisting measure will be taken
+ | by Google soon (likely a captcha verification), this script cannot
+ | (yet) resolve captchas so it will stop as soon as a captcha points
  | its nose to avoid blacklisting your IP.
 
 NOTOR
@@ -814,7 +814,7 @@ done
 
 cat <<TOTALTILES
  > Total number of tiles that will be downloaded: $TOTALTILES
- 
+
 TOTALTILES
 
 if $use_tor; then
@@ -856,7 +856,7 @@ EOL
 		fi
 		[[ $MINX -lt 0 ]] && MINX=0
 		[[ $MINY -lt 0 ]] && MINY=0
-		for i in $(seq $MINX $MAXX); do  
+		for i in $(seq $MINX $MAXX); do
 			mkdir -p tiles/s/$z/$i
 			mkdir -p tiles/h/$z/$i
 		done
@@ -868,8 +868,8 @@ EOL
 			for y in $(seq $MINY $MAXY); do
 				[[ -f tiles/s/$z/$x/$y.jpg ]] && [[ $(ls -lah tiles/s/$z/$x/$y.jpg | awk '{print $5}') == 0 ]] && rm tiles/s/$z/$x/$y.jpg && echo -e " > tiles/s/$z/$x/$y.jpg not a valide file, \e[31m\e[1mremoved\e[0m      " && printf "\033[A"
 				[[ -f tiles/h/$z/$x/$y.png ]] && [[ $(ls -lah tiles/h/$z/$x/$y.png | awk '{print $5}') == 0 ]] && rm tiles/h/$z/$x/$y.png && echo -e " > tiles/h/$z/$x/$y.png not a valide file, \e[31m\e[1mremoved\e[0m      " && printf "\033[A"
-				[[ -f tiles/s/$z/$x/$y.jpg ]] && ! $(valid_image tiles/s/$z/$x/$y.jpg) && rm tiles/s/$z/$x/$y.jpg && echo -e " > tiles/s/$z/$x/$y.jpg not a valide image format, \e[31m\e[1mremoved\e[0m      " && printf "\033[A"
-				[[ -f tiles/h/$z/$x/$y.png ]] && ! $(valid_image tiles/h/$z/$x/$y.png) && rm tiles/h/$z/$x/$y.png && echo -e " > tiles/h/$z/$x/$y.png not a valide image format, \e[31m\e[1mremoved\e[0m      " && printf "\033[A"
+				[[ -f tiles/s/$z/$x/$y.jpg ]] && ! $(valid_image tiles/s/$z/$x/$y.jpg) && rm tiles/s/$z/$x/$y.jpg && echo -e " > tiles/s/$z/$x/$y.jpg not a valid image format, \e[31m\e[1mremoved\e[0m      " && printf "\033[A"
+				[[ -f tiles/h/$z/$x/$y.png ]] && ! $(valid_image tiles/h/$z/$x/$y.png) && rm tiles/h/$z/$x/$y.png && echo -e " > tiles/h/$z/$x/$y.png not a valid image format, \e[31m\e[1mremoved\e[0m      " && printf "\033[A"
 				[[ -f tiles/s/$z/$x/$y.jpg ]] && echo -e " >>> tiles/s/$z/$x/$y.jpg already exists, \e[34m\e[1mskipping ...\e[0m        " && printf "\033[A"
 				[[ -f tiles/h/$z/$x/$y.png ]] && echo -e " >>> tiles/h/$z/$x/$y.png already exists, \e[34m\e[1mskipping ...\e[0m        " && printf "\033[A"
 					while [[ $(jobs | wc -l) -gt $max_connections ]]; do
@@ -879,7 +879,7 @@ EOL
 				[[ ! -f tiles/h/$z/$x/$y.png ]] && ! $only_sat && twget "http://mts0.google.com/vt/lyrs=h&hl=$language&src=app&x=$x&y=$y&z=$z&s=Galileo" 1 &
 			done
 		done
-	done 
+	done
 	exit 0
 else
 	gen_html $longitude $latitude $min_zoom $max_zoom $name
@@ -898,7 +898,7 @@ else
 		fi
 		[[ $MINX -lt 0 ]] && MINX=0
 		[[ $MINY -lt 0 ]] && MINY=0
-		for i in $(seq $MINX $MAXX); do  
+		for i in $(seq $MINX $MAXX); do
 			mkdir -p tiles/s/$z/$i
 			mkdir -p tiles/h/$z/$i
 		done
@@ -943,6 +943,6 @@ else
 				((i++))
 			done
 		done
-	done 
+	done
 	exit 0
 fi
