@@ -790,7 +790,12 @@ function multitor {
 
 function newnym {
 	PORT="$@"
-	echo -e 'authenticate ""\nSIGNAL NEWNYM' | nc localhost 1${PORT} > /dev/null 2>&1
+	echo -e 'authenticate ""\nSIGNAL NEWNYM' | nc localhost 1${PORT} -q 0 > /dev/null 2>&1
+}
+
+function shutdown_tor {
+	PORT="$@"
+	echo -e 'authenticate ""\nSIGNAL SHUTDOWN' | nc localhost 1${PORT} -q 0 > /dev/null 2>&1
 }
 
 function bootstrap_status {
@@ -926,6 +931,11 @@ EOL
 	# Wait for all pending jobs before exiting
 	while [[ $(jobs -r | wc -l) -gt 0 ]]; do
 		sleep 0.1
+	done
+
+	# Close all Tor processes to avoid memory leak
+	for port in $(seq $start_port $end_port); do
+		shutdown_tor $port
 	done
 	exit 0
 else
