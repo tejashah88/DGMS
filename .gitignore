@@ -1,0 +1,8 @@
+# Tiles folder
+tiles/
+
+# Generated HTML files
+*.html
+
+# Lock files generated from Tor connections
+.[0-9]*/
