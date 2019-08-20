@@ -821,6 +821,32 @@ function valid_image {
 	[[ "$ERROR" =~ 'error' ]] && echo false || echo true
 }
 
+function cleanup_multitor {
+	# Wait for all pending jobs before exiting
+	echo
+	echo "Waiting for remaining jobs to complete..."
+	while [[ $(jobs -r | wc -l) -gt 0 ]]; do
+		sleep 0.1
+	done
+
+	# Close all Tor processes to avoid memory leak
+	echo "Closing remaining Tor processes..."
+	for port in $(seq $start_port $end_port); do
+		shutdown_tor $port
+	done
+
+	# Remove generated Tor socket config files from /tmp folder
+	rm -rfv /tmp/torsocks.[0-9]*.conf
+
+	# Remove generated folder from Tor circuit setup relative to local folder
+	rm -rfv .[0-9]*/
+
+	exit 0
+}
+
+# We completely trap the Ctrl+C signal and exit ourselves
+trap cleanup_multitor INT
+
 echo " > Checking for necessary files ..."
 
 mkdir -p tiles
@@ -928,15 +954,7 @@ EOL
 		done
 	done
 
-	# Wait for all pending jobs before exiting
-	while [[ $(jobs -r | wc -l) -gt 0 ]]; do
-		sleep 0.1
-	done
-
-	# Close all Tor processes to avoid memory leak
-	for port in $(seq $start_port $end_port); do
-		shutdown_tor $port
-	done
+	cleanup_multitor
 	exit 0
 else
 	gen_html $longitude $latitude $min_zoom $max_zoom $name
