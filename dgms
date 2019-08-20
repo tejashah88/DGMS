@@ -97,8 +97,10 @@ cat <<HTML > $name.html
 		</style>
 	</head>
 	<body>
-		<div class="top" style="display: inline; float: left; width: 160px; height: 100%" id="zoom"><img class="top" src="./tiles/img/zp.png" id="plus" style="height: 70px; width: 70px; margin: 5px"/><img class="top" src="./tiles/img/zm.png" id="minus" style="height: 70px; width: 70px; margin: 5px"/></div>
-		<img src="./tiles/img/cross.png" id="cross">
+		<div class="top" style="display: inline; float: left; width: 160px; height: 100%" id="zoom">
+			<img class="top" src="./tiles/img/zp.png" id="plus" style="height: 70px; width: 70px; margin: 5px"/><img class="top" src="./tiles/img/zm.png" id="minus" style="height: 70px; width: 70px; margin: 5px"/>
+		</div>
+		<img src="./tiles/img/cross.png" width="50px" height="50px" id="cross">
 		<table class="draggable" id="map">
 			<tr>
 				<td id="alpha">
@@ -111,7 +113,7 @@ cat <<HTML > $name.html
 		/*******************************************== SECTION MODIFIED BY THE BASH SCRIPT ==*******************************************************/
 
 		var default_zoom = $Mz,										// the default zoom given to the bash script
-			init_coords = {'lat': $lat, 'long': $long},		// the initial coordinates given to the bash script
+			init_coords = {'lat': $lat, 'long': $long},				// the initial coordinates given to the bash script
 			MAX_ZOOM = 23,											// the zoom interval given (or set by default) to the bash script
 			MIN_ZOOM = 2;
 
@@ -139,17 +141,19 @@ cat <<HTML > $name.html
 
 		function zoom(z, first_time) {
 			first_time = first_time || false;
-			if(z < MIN_ZOOM || z > MAX_ZOOM) {
+			if (z < MIN_ZOOM || z > MAX_ZOOM) {
 				$.zooming = false;
 				return true;									// do not exceed max and min zoom, return true to say that no zoom has happened
 			}
+
 			var long = \$("#long").html();						// read lat and long from SPAN tags
 			var lat = \$("#lat").html();
 			old_coords = {'lat': lat, 'long': long};			// store theses coords, we'll need them when zoom finishes, to return to them
-			if(lat === null && long === null) {					// if there is nothing in SPAN tags, affect the default coordinates
+			if (!lat && !long) {								// if there is nothing in SPAN tags, affect the default coordinates
 				lat = init_coords.lat;
 				long = init_coords.long;
 			}
+
 			lat = parseFloat(lat);
 			long = parseFloat(long);
 			var pureOldX = latlong2PureXY(z, lat, long).X;		// pure means get the float number of the tile (it's number + fraction of the next one)
@@ -158,7 +162,7 @@ cat <<HTML > $name.html
 			var Y = latlong2XY(z, lat, long).Y;
 			\$("#map").html("<tr><td id='alpha'></td></tr>");	// reset the map
 			\$("#alpha").attr('coord', X).append("<img style='background:url(./tiles/s/" + default_zoom + "/" + X + "/" + Y + ".jpg)' src='./tiles/h/" + default_zoom + "/" + X + "/" + Y + ".png' onerror='this.src = \"./tiles/img/transparent.png\"'>").parent().attr('coord', Y);	// put the first (landmark) tile
-			\$("#map").center().grow();							// center the table (with a single tile) then expend it until it reaches or exceeds the window borders
+			\$("#map").center().grow();							// center the table (with a single tile) then expand it until it reaches or exceeds the window borders
 			\$("#cross").center();
 			\$("#current_zoom").html(z);
 			/*
@@ -166,7 +170,7 @@ cat <<HTML > $name.html
 			 * the screen (on the cross) changes, for user comfort we'll
 			 * move the table (the map) until this position returns at the center of the screen
 			 */
-			if(first_time) return false;						// if it's the first zoom (i.e. when the page loads) no need to slide!
+			if (first_time) return false;						// if it's the first zoom (i.e. when the page loads) no need to slide!
 
 			setTimeout(function() {
 				new_coords = compute_coords(z);					// compute new coordinates, and store them to compare to the old ones
@@ -178,11 +182,11 @@ cat <<HTML > $name.html
 					top: "-=" + 256*(pureOldY - pureNewY),
 					left: "-=" + 256*(pureOldX - pureNewX)
 				}, 600, 'easeOutBounce', function() {
-					compute_coords(z);									// recompute coordinates
-					\$("#map").grow();									// expend the table in case some borders entered the screen
-					$.zooming = false;									// now you can zoom
+					compute_coords(z);							// recompute coordinates
+					\$("#map").grow();							// expand the table in case some borders entered the screen
+					$.zooming = false;							// now you can zoom
 				});
-			},200);
+			}, 200);
 			return false										// return false to confirm that a zoom has happened
 		}
 
@@ -191,18 +195,25 @@ cat <<HTML > $name.html
 			 * function that compute the new coordinates
 			 * at the center of the window
 			 */
-			var xcenter = \$("#cross").offset().left + 15;				// get the position of the cross (by default at the center)
-			var ycenter = \$("#cross").offset().top + 15;
-			\$("#cross").hide();											// hide it a short time to be able to get the element
-			var tile = document.elementFromPoint(xcenter, ycenter);		// that is a the center of the window (other than the
-			\$("#cross").show();											// cross of course)
-			if(tile.tagName == "IMG") {									// a little hack to handle what happens when the window loads (there is no IMG yet)
+			var xcenter = \$("#cross").offset().left + \$("#cross").width() / 2;		// get the position of the cross (by default at the center)
+			var ycenter = \$("#cross").offset().top + \$("#cross").height() / 2;
+			\$("#cross").hide();										// hide it a short time to be able to get the element that
+			var tile = document.elementFromPoint(xcenter, ycenter);		// is at the center of the window (other than the cross
+			\$("#cross").show();
+			\$("#cross").center();										// make sure to re-center the cross after a drag event
+
+			if (tile == null) {											// if the cursor has gone out of bounds, there no valid tile behind
+				\$("#lat").html("N/A");									// so just pass the initial coordinates as the output
+				\$("#long").html("N/A");
+				return init_coords;
+			} else if (tile.tagName == "IMG") {							// a little hack to handle what happens when the window loads (there is no IMG yet)
 				var X = \$(tile).parent().attr('coord');
 				var Y = \$(tile).parent().parent().attr('coord');
 			} else {
 				var X = \$(tile).attr('coord');
 				var Y = \$(tile).parent().attr('coord');
 			}
+
 			var x = \$(tile).offset().left;
 			var y = \$(tile).offset().top;
 			var dx = xcenter - x;
@@ -251,17 +262,17 @@ cat <<HTML > $name.html
 				}
 			}
 
-			$.fn.grow = function () {				// importante piece of the code, it expends the table whenever moved and some borders enter the screen
+			$.fn.grow = function () {				// important piece of code, it expands the table whenever moved and some borders enter the screen
 				var ltbr = this.allOffsets();
 				var l = ltbr.left;
 				var t = ltbr.top;
 				var r = ltbr.right;
 				var b = ltbr.bottom;
 				/*
-				 * will test all four borders, if one of the is inside the screen
-				 * expend the table in his side
+				 * will test all four borders, if one of them is inside the screen
+				 * expand the table on that side
 				 */
-				if(l > 0) {
+				if (l > 0) {
 					/*
 					 * get the table height (number of TR) then APPEND to
 					 * each TR a TD with the coord of the FIRST
@@ -269,19 +280,22 @@ cat <<HTML > $name.html
 					 */
 					var dy = this.find('tr').length;
 					var xcoord = this.find('tr:first-child').find('td:first-child').attr('coord');
-					for(var i=1; i<=dy; i++) {
-						this.find('tr:nth-child(' + i + ')').prepend("<td coord='" + (parseInt(xcoord) - 1) + "'></td>");
-						this.find('tr:nth-child(' + i + ')').find("td[coord=" + (parseInt(xcoord) - 1) + "]").append(\$("<img style='background:url(./tiles/s/" + default_zoom + '/' + (parseInt(xcoord) - 1) + "/" + this.find('tr:nth-child(' + i + ')').attr('coord') + ".jpg)' src='./tiles/h/" + default_zoom + '/' + (parseInt(xcoord) - 1) + "/" + this.find('tr:nth-child(' + i + ')').attr('coord') + ".png' onerror='this.src = \"./tiles/img/transparent.png\"'>").hide().fadeIn());
+					for (var i = 1; i <= dy; i++) {
+						this.find('tr:nth-child(' + i + ')')
+							.prepend("<td coord='" + (parseInt(xcoord) - 1) + "'></td>");
+						this.find('tr:nth-child(' + i + ')')
+							.find("td[coord=" + (parseInt(xcoord) - 1) + "]")
+							.append(\$("<img style='background:url(./tiles/s/" + default_zoom + '/' + (parseInt(xcoord) - 1) + "/" + this.find('tr:nth-child(' + i + ')').attr('coord') + ".jpg)' src='./tiles/h/" + default_zoom + '/' + (parseInt(xcoord) - 1) + "/" + this.find('tr:nth-child(' + i + ')').attr('coord') + ".png' onerror='this.src = \"./tiles/img/transparent.png\"'>").hide().fadeIn());
 					}
-					this.offset({left: this.offset().left - 256});	// when expending to the left the tiles will shift to the right by 256px, move the table to the left by 256 px
-				} else if(l < -2048) {
+					this.offset({left: this.offset().left - 256});	// when expanding to the left the tiles will shift to the right by 256px, move the table to the left by 256 px
+				} else if (l < -2048) {
 					var dy = this.find('tr').length;
-					for(var i=1; i<=dy; i++) {
+					for (var i = 1; i <= dy; i++) {
 						this.find('tr:nth-child(' + i + ')').find("td:first-child").remove();
 					}
 					this.offset({left: this.offset().left + 256});	// when croping on the left the tiles will shift to the left by 256px, move the table to the right by 256 px
 				}
-				if(r > 0) {
+				if (r > 0) {
 					/*
 					 * get the table height (number of TR) then PREPEND to
 					 * each TR a TD with the coord of the LAST
@@ -289,18 +303,21 @@ cat <<HTML > $name.html
 					 */
 					var dy = this.find('tr').length;
 					var xcoord = this.find('tr:first-child').find('td:last-child').attr('coord');
-					for(var i=1; i<=dy; i++) {
-						this.find('tr:nth-child(' + i + ')').append("<td coord='" + (parseInt(xcoord) + 1) + "'></td>");
-						this.find('tr:nth-child(' + i + ')').find("td[coord=" + (parseInt(xcoord) + 1) + "]").append(\$("<img style='background:url(./tiles/s/" + default_zoom + '/' + (parseInt(xcoord) + 1) + "/" + this.find('tr:nth-child(' + i + ')').attr('coord') + ".jpg)' src='./tiles/h/" + default_zoom + '/' + (parseInt(xcoord) + 1) + "/" + this.find('tr:nth-child(' + i + ')').attr('coord') + ".png' onerror='this.src = \"./tiles/img/transparent.png\"'>").hide().fadeIn());
+					for (var i = 1; i <= dy; i++) {
+						this.find('tr:nth-child(' + i + ')')
+							.append("<td coord='" + (parseInt(xcoord) + 1) + "'></td>");
+						this.find('tr:nth-child(' + i + ')')
+							.find("td[coord=" + (parseInt(xcoord) + 1) + "]")
+							.append(\$("<img style='background:url(./tiles/s/" + default_zoom + '/' + (parseInt(xcoord) + 1) + "/" + this.find('tr:nth-child(' + i + ')').attr('coord') + ".jpg)' src='./tiles/h/" + default_zoom + '/' + (parseInt(xcoord) + 1) + "/" + this.find('tr:nth-child(' + i + ')').attr('coord') + ".png' onerror='this.src = \"./tiles/img/transparent.png\"'>").hide().fadeIn());
 					}
 
-				} else if(r < -2048) {
+				} else if (r < -2048) {
 					var dy = this.find('tr').length;
-					for(var i=1; i<=dy; i++) {
+					for (var i = 1; i <= dy; i++) {
 						this.find('tr:nth-child(' + i + ')').find("td:last-child").remove();
 					}
 				}
-				if(t > 0) {
+				if (t > 0) {
 					/*
 					 * get the table width (number of TD on the first TR)
 					 * then APPEND a TR with this length and the
@@ -311,18 +328,21 @@ cat <<HTML > $name.html
 					var ycoord = this.find('tr:first-child').attr("coord");
 					var xcoord = this.find('tr:first-child').find('td:first-child').attr("coord");
 					this.prepend("<tr coord='" + (parseInt(ycoord) - 1) + "'></tr>");
-					for(var i=0; i<dx; i++) {
-						\$("tr[coord=" + (parseInt(ycoord) - 1) + "]").append("<td coord=" + xcoord + "></td>");
-						\$("tr[coord=" + (parseInt(ycoord) - 1) + "]").find("td[coord=" + xcoord + "]").append(\$("<img style='background:url(./tiles/s/" + default_zoom + '/' + xcoord + "/" + (parseInt(ycoord) - 1) + ".jpg)' src='./tiles/h/" + default_zoom + '/' + xcoord + "/" + (parseInt(ycoord) - 1) + ".png' onerror='this.src = \"./tiles/img/transparent.png\"'>").hide().fadeIn());
+					for (var i = 0; i < dx; i++) {
+						\$("tr[coord=" + (parseInt(ycoord) - 1) + "]")
+							.append("<td coord=" + xcoord + "></td>");
+						\$("tr[coord=" + (parseInt(ycoord) - 1) + "]")
+							.find("td[coord=" + xcoord + "]")
+							.append(\$("<img style='background:url(./tiles/s/" + default_zoom + '/' + xcoord + "/" + (parseInt(ycoord) - 1) + ".jpg)' src='./tiles/h/" + default_zoom + '/' + xcoord + "/" + (parseInt(ycoord) - 1) + ".png' onerror='this.src = \"./tiles/img/transparent.png\"'>").hide().fadeIn());
 						xcoord++;
 					}
-					this.offset({top: this.offset().top - 256});	// when expending to the top the tiles will shift to the bottom by 256px, move the table to the top by 256 px
-				} else if(t < -2048) {
+					this.offset({top: this.offset().top - 256});	// when expanding to the top the tiles will shift to the bottom by 256px, move the table to the top by 256 px
+				} else if (t < -2048) {
 					var dx = this.find('tr:first-child').find('td').length;
 					this.find("tr:first-child").remove();
 					this.offset({top: this.offset().top + 256});	// when croping on the top the tiles will shift to the top by 256px, move the table to the bottom by 256 px
 				}
-				if(b > 0) {
+				if (b > 0) {
 					/*
 					 * get the table width (number of TD on the first TR)
 					 * then PREPEND a TR with this length and the
@@ -333,12 +353,15 @@ cat <<HTML > $name.html
 					var ycoord = this.find('tr:last-child').attr("coord");
 					var xcoord = this.find('tr:first-child').find('td:first-child').attr("coord");
 					this.append("<tr coord='" + (parseInt(ycoord) + 1) + "'></tr>");
-					for(var i=0; i<dx; i++) {
-						\$("tr[coord=" + (parseInt(ycoord) + 1) + "]").append("<td coord=" + xcoord + "></td>");
-						\$("tr[coord=" + (parseInt(ycoord) + 1) + "]").find("td[coord=" + xcoord + "]").append(\$("<img style='background:url(./tiles/s/" + default_zoom + '/' + xcoord + "/" + (parseInt(ycoord) + 1) + ".jpg)' src='./tiles/h/" + default_zoom + '/' + xcoord + "/" + (parseInt(ycoord) + 1) + ".png' onerror='this.src = \"./tiles/img/transparent.png\"'>").hide().fadeIn());
+					for (var i = 0; i < dx; i++) {
+						\$("tr[coord=" + (parseInt(ycoord) + 1) + "]")
+							.append("<td coord=" + xcoord + "></td>");
+						\$("tr[coord=" + (parseInt(ycoord) + 1) + "]")
+							.find("td[coord=" + xcoord + "]")
+							.append(\$("<img style='background:url(./tiles/s/" + default_zoom + '/' + xcoord + "/" + (parseInt(ycoord) + 1) + ".jpg)' src='./tiles/h/" + default_zoom + '/' + xcoord + "/" + (parseInt(ycoord) + 1) + ".png' onerror='this.src = \"./tiles/img/transparent.png\"'>").hide().fadeIn());
 						xcoord++;
 					}
-				} else if(b < -2048) {
+				} else if (b < -2048) {
 					var dx = this.find('tr:first-child').find('td').length;
 					this.find("tr:last-child").remove();
 				}
@@ -347,7 +370,7 @@ cat <<HTML > $name.html
 				var t = ltbr.top;
 				var r = ltbr.right;
 				var b = ltbr.bottom;
-				if(l>0 | t>0 | r>0 | b>0) this.grow();	// if the table borders are still inside the screen expend it once again...
+				if (l > 0 || t > 0 || r > 0 || b > 0) this.grow();	// if the table borders are still inside the screen expand it once again...
 			}
 
 			\$("#map").draggable({						// make the map (the TABLE) draggable both on PC's and mobiles
@@ -356,7 +379,7 @@ cat <<HTML > $name.html
 					compute_coords(default_zoom);		// permanently compute and display the coordinates of the center of the map
 				},
 				stop: function( event, ui) {
-					\$(this).grow();						// once the drag has finished, expend the TABLE
+					\$(this).grow();						// once the drag has finished, expand the TABLE
 				}
 			});
 
@@ -368,7 +391,7 @@ cat <<HTML > $name.html
 			/*
 			 * THE FIRST ZOOM WICH WILL DISPLAY THE CENTER TILE
 			 * (THE ONE COORDINATES YOU CHOOSE IN BASH SCRIPT BELONG TO)
-			 * THEN EXPEND IT, PASS THE TRUE ARGUMENT SO NO SLIDING
+			 * THEN EXPAND IT, PASS THE TRUE ARGUMENT SO NO SLIDING
 			 * (CORRECTION OF COORDINATES) WILL BE DONE (NO NEED TO IT!)
 			 */
 
@@ -382,23 +405,23 @@ cat <<HTML > $name.html
 
 			\$("#plus")
 				.click(function() {
-					if($.zooming) return false;
+					if ($.zooming) return false;
 					$.zooming = true;
 					zoom(++default_zoom) && default_zoom--;		// if no more zoom possible, revert the incrementation
 				})
 				.bind('touchstart',function() {					// BUG IN THE jquery.ui.touch-punch LIBRARY, CLICK IS
-					if($.zooming) return false;
+					if ($.zooming) return false;
 					$.zooming = true;
 					zoom(++default_zoom) && default_zoom--;		// NOT BINDED TO TOUCH EVENTS, MUST DO IT PROGRAMATICALLY
 				});
 			\$("#minus")
 				.click(function() {
-					if($.zooming) return false;
+					if ($.zooming) return false;
 					$.zooming = true;
 					zoom(--default_zoom) && default_zoom++;
 				})
 				.bind('touchstart',function() {
-					if($.zooming) return false;
+					if ($.zooming) return false;
 					$.zooming = true;
 					zoom(--default_zoom) && default_zoom++;
 				});
@@ -413,38 +436,57 @@ cat <<HTML > $name.html
 
 			\$(document).keydown(function(e){
 				if (e.keyCode == 37) {
-					if($.going_left) return false;
+					if ($.going_left) return false;
 					$.going_left = true;
-					\$("#map").animate({left: "+=200"},300, function(){\$("#map").grow(); compute_coords(default_zoom); $.going_left = false;})
+					\$("#map").animate({left: "+=200"}, 300, function() {
+						\$("#map").grow();
+						compute_coords(default_zoom);
+						$.going_left = false;
+					});
 					return false;
-				} else if(e.keyCode == 38) {
-					if($.going_top) return false;
+				} else if (e.keyCode == 38) {
+					if ($.going_top) return false;
 					$.going_top = true;
-					\$("#map").animate({top: "+=200"},300, function(){\$("#map").grow(); compute_coords(default_zoom); $.going_top = false;})
+					\$("#map").animate({top: "+=200"}, 300, function() {
+						\$("#map").grow();
+						compute_coords(default_zoom);
+						$.going_top = false;
+					});
 					return false;
-				} else if(e.keyCode == 39) {
-					if($.going_right) return false;
+				} else if (e.keyCode == 39) {
+					if ($.going_right) return false;
 					$.going_right = true;
-					\$("#map").animate({left: "-=200"},300, function(){\$("#map").grow(); compute_coords(default_zoom); $.going_right = false;})
+					\$("#map").animate({left: "-=200"}, 300, function() {
+						\$("#map").grow();
+						compute_coords(default_zoom);
+						$.going_right = false;
+					});
 					return false;
-				} else if(e.keyCode == 40) {
-					if($.going_bottom) return false;
+				} else if (e.keyCode == 40) {
+					if ($.going_bottom) return false;
 					$.going_bottom = true;
-					\$("#map").animate({top: "-=200"},300, function(){\$("#map").grow(); compute_coords(default_zoom); $.going_bottom = false;})
+					\$("#map").animate({top: "-=200"}, 300, function() {
+						\$("#map").grow();
+						compute_coords(default_zoom);
+						$.going_bottom = false;
+					});
 					return false;
-				} else if(e.keyCode == 109) {
-					if($.zooming) return false;
+				} else if (e.keyCode == 109) {
+					if ($.zooming) return false;
 					$.zooming = true;
 					zoom(--default_zoom) && default_zoom++;
 					return false;
-				} else if(e.keyCode == 107) {
-					if($.zooming) return false;
+				} else if (e.keyCode == 107) {
+					if ($.zooming) return false;
 					$.zooming = true;
 					zoom(++default_zoom) && default_zoom--;
 					return false;
 				}
 			});
 
+			\$(window).resize(function() {
+				\$("#cross").center();			// make sure to re-center the cross after a resize event
+			});
 		});
 	</script>
 </html>
@@ -795,10 +837,10 @@ wget -q -nc -O tiles/img/404.png "https://dummyimage.com/256/ffffff/f00.png&text
 TOTALTILES=0
 
 for z in $(seq $max_zoom -1 $min_zoom); do
-	MINX=$( echo "(2^($z-1))*(($MINLONG/180)+1)" | bc -l | cut -f1 -d"." )
-	MAXX=$( echo "(2^($z-1))*(($MAXLONG/180)+1)" | bc -l | cut -f1 -d"." )
-	MAXY=$( echo "(2^$z)-((2^($z-1)/$PI)*(((l(s((90+$MINLAT)*$PI/360)/c((90+$MINLAT)*$PI/360)))+$PI)))" | bc -l | cut -f1 -d"." )
-	MINY=$( echo "(2^$z)-((2^($z-1)/$PI)*(((l(s((90+$MAXLAT)*$PI/360)/c((90+$MAXLAT)*$PI/360)))+$PI)))" | bc -l | cut -f1 -d"." )
+	MINX=$( echo "(2^($z-1))*(($MINLONG/180)+1)" | bc -l | awk '{printf("%d\n",$0)}' )
+	MAXX=$( echo "(2^($z-1))*(($MAXLONG/180)+1)" | bc -l | awk '{printf("%d\n",$0)}' )
+	MAXY=$( echo "(2^$z)-((2^($z-1)/$PI)*(((l(s((90+$MINLAT)*$PI/360)/c((90+$MINLAT)*$PI/360)))+$PI)))" | bc -l | awk '{printf("%d\n",$0)}' )
+	MINY=$( echo "(2^$z)-((2^($z-1)/$PI)*(((l(s((90+$MAXLAT)*$PI/360)/c((90+$MAXLAT)*$PI/360)))+$PI)))" | bc -l | awk '{printf("%d\n",$0)}' )
 	if [ $( echo "$MAXX-$MINX" | bc ) -le 9 ]; then
 		MAXX=$( echo "$MAXX+(10-($MAXX-$MINX))/2" | bc | cut -f1 -d"." )
 		MINX=$( echo "$MINX-(12-($MAXX-$MINX))/2" | bc | cut -f1 -d"." )
@@ -842,10 +884,10 @@ EOL
 	done
 	gen_html $longitude $latitude $min_zoom $max_zoom $name
 	for z in $(seq $max_zoom -1 $min_zoom); do
-		MINX=$( echo "(2^($z-1))*(($MINLONG/180)+1)" | bc -l | cut -f1 -d"." )
-		MAXX=$( echo "(2^($z-1))*(($MAXLONG/180)+1)" | bc -l | cut -f1 -d"." )
-		MAXY=$( echo "(2^$z)-((2^($z-1)/$PI)*(((l(s((90+$MINLAT)*$PI/360)/c((90+$MINLAT)*$PI/360)))+$PI)))" | bc -l | cut -f1 -d"." )
-		MINY=$( echo "(2^$z)-((2^($z-1)/$PI)*(((l(s((90+$MAXLAT)*$PI/360)/c((90+$MAXLAT)*$PI/360)))+$PI)))" | bc -l | cut -f1 -d"." )
+		MINX=$( echo "(2^($z-1))*(($MINLONG/180)+1)" | bc -l | awk '{printf("%d\n",$0)}' )
+		MAXX=$( echo "(2^($z-1))*(($MAXLONG/180)+1)" | bc -l | awk '{printf("%d\n",$0)}' )
+		MAXY=$( echo "(2^$z)-((2^($z-1)/$PI)*(((l(s((90+$MINLAT)*$PI/360)/c((90+$MINLAT)*$PI/360)))+$PI)))" | bc -l | awk '{printf("%d\n",$0)}' )
+		MINY=$( echo "(2^$z)-((2^($z-1)/$PI)*(((l(s((90+$MAXLAT)*$PI/360)/c((90+$MAXLAT)*$PI/360)))+$PI)))" | bc -l | awk '{printf("%d\n",$0)}' )
 		if [ $( echo "$MAXX-$MINX" | bc ) -le 9 ]; then
 			MAXX=$( echo "$MAXX+(10-($MAXX-$MINX))/2" | bc | cut -f1 -d"." )
 			MINX=$( echo "$MINX-(12-($MAXX-$MINX))/2" | bc | cut -f1 -d"." )
@@ -866,8 +908,8 @@ EOL
 		TOTALTILES=$( echo "($MAXX-$MINX+1)*($MAXY-$MINY+1)" | bc )
 		for x in $(seq $MINX $MAXX); do
 			for y in $(seq $MINY $MAXY); do
-				[[ -f tiles/s/$z/$x/$y.jpg ]] && [[ $(ls -lah tiles/s/$z/$x/$y.jpg | awk '{print $5}') == 0 ]] && rm tiles/s/$z/$x/$y.jpg && echo -e " > tiles/s/$z/$x/$y.jpg not a valide file, \e[31m\e[1mremoved\e[0m      " && printf "\033[A"
-				[[ -f tiles/h/$z/$x/$y.png ]] && [[ $(ls -lah tiles/h/$z/$x/$y.png | awk '{print $5}') == 0 ]] && rm tiles/h/$z/$x/$y.png && echo -e " > tiles/h/$z/$x/$y.png not a valide file, \e[31m\e[1mremoved\e[0m      " && printf "\033[A"
+				[[ -f tiles/s/$z/$x/$y.jpg ]] && [[ $(ls -lah tiles/s/$z/$x/$y.jpg | awk '{print $5}') == 0 ]] && rm tiles/s/$z/$x/$y.jpg && echo -e " > tiles/s/$z/$x/$y.jpg not a valid file, \e[31m\e[1mremoved\e[0m      " && printf "\033[A"
+				[[ -f tiles/h/$z/$x/$y.png ]] && [[ $(ls -lah tiles/h/$z/$x/$y.png | awk '{print $5}') == 0 ]] && rm tiles/h/$z/$x/$y.png && echo -e " > tiles/h/$z/$x/$y.png not a valid file, \e[31m\e[1mremoved\e[0m      " && printf "\033[A"
 				[[ -f tiles/s/$z/$x/$y.jpg ]] && ! $(valid_image tiles/s/$z/$x/$y.jpg) && rm tiles/s/$z/$x/$y.jpg && echo -e " > tiles/s/$z/$x/$y.jpg not a valid image format, \e[31m\e[1mremoved\e[0m      " && printf "\033[A"
 				[[ -f tiles/h/$z/$x/$y.png ]] && ! $(valid_image tiles/h/$z/$x/$y.png) && rm tiles/h/$z/$x/$y.png && echo -e " > tiles/h/$z/$x/$y.png not a valid image format, \e[31m\e[1mremoved\e[0m      " && printf "\033[A"
 				[[ -f tiles/s/$z/$x/$y.jpg ]] && echo -e " >>> tiles/s/$z/$x/$y.jpg already exists, \e[34m\e[1mskipping ...\e[0m        " && printf "\033[A"
@@ -884,10 +926,10 @@ EOL
 else
 	gen_html $longitude $latitude $min_zoom $max_zoom $name
 	for z in $(seq $max_zoom -1 $min_zoom); do
-		MINX=$( echo "(2^($z-1))*(($MINLONG/180)+1)" | bc -l | cut -f1 -d"." )
-		MAXX=$( echo "(2^($z-1))*(($MAXLONG/180)+1)" | bc -l | cut -f1 -d"." )
-		MAXY=$( echo "(2^$z)-((2^($z-1)/$PI)*(((l(s((90+$MINLAT)*$PI/360)/c((90+$MINLAT)*$PI/360)))+$PI)))" | bc -l | cut -f1 -d"." )
-		MINY=$( echo "(2^$z)-((2^($z-1)/$PI)*(((l(s((90+$MAXLAT)*$PI/360)/c((90+$MAXLAT)*$PI/360)))+$PI)))" | bc -l | cut -f1 -d"." )
+		MINX=$( echo "(2^($z-1))*(($MINLONG/180)+1)" | bc -l | awk '{printf("%d\n",$0)}' )
+		MAXX=$( echo "(2^($z-1))*(($MAXLONG/180)+1)" | bc -l | awk '{printf("%d\n",$0)}' )
+		MAXY=$( echo "(2^$z)-((2^($z-1)/$PI)*(((l(s((90+$MINLAT)*$PI/360)/c((90+$MINLAT)*$PI/360)))+$PI)))" | bc -l | awk '{printf("%d\n",$0)}' )
+		MINY=$( echo "(2^$z)-((2^($z-1)/$PI)*(((l(s((90+$MAXLAT)*$PI/360)/c((90+$MAXLAT)*$PI/360)))+$PI)))" | bc -l | awk '{printf("%d\n",$0)}' )
 		if [ $( echo "$MAXX-$MINX" | bc ) -le 9 ]; then
 			MAXX=$( echo "$MAXX+(10-($MAXX-$MINX))/2" | bc | cut -f1 -d"." )
 			MINX=$( echo "$MINX-(10-($MAXX-$MINX))/2" | bc | cut -f1 -d"." )
