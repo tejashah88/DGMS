@@ -753,7 +753,7 @@ function newnym {
 
 function bootstrap_status {
 	PORT="$@"
-	echo -e 'authenticate ""\nGETINFO status/bootstrap-phase' | nc localhost 1${PORT} | grep PROGRESS | awk '{print $3}' | sed 's/PROGRESS=//'
+	echo -e 'authenticate ""\nGETINFO status/bootstrap-phase' | nc localhost 1${PORT} -q 0 | grep PROGRESS | awk '{print $3}' | sed 's/PROGRESS=//'
 }
 
 function get_IP {
