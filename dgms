@@ -23,9 +23,9 @@ cat <<HTML > $name.html
 	<head>
 		<meta charset=utf-8 />
 		<title>$name</title>
-		<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; minimum-scale=1.0; user-scalable=0;" />
-		<script src="./tiles/js/jquery-1.7.2.min.js"></script>
-		<script src="./tiles/js/jquery-ui-1.10.4.custom.min.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0" />
+		<script src="./tiles/js/jquery-1.12.4.min.js"></script>
+		<script src="./tiles/js/jquery-ui-1.12.1.min.js"></script>
 		<script src="./tiles/js/jquery.ui.touch-punch.min.js"></script>
 		<style type="text/css">
 			body {
@@ -781,9 +781,9 @@ mkdir -p tiles/js
 mkdir -p tiles/img
 mkdir -p tiles/s
 mkdir -p tiles/h
-wget -q -nc -O tiles/js/jquery-1.7.2.min.js http://code.jquery.com/jquery-1.7.2.min.js && echo " -> jquery OK!"
-wget -q -nc -O tiles/js/jquery-ui-1.10.4.custom.min.js https://raw.githubusercontent.com/ubugnu/jquery-ui/master/jquery-ui-1.10.4.custom.min.js && echo " -> jquery-ui OK!"
-wget -q -nc -O tiles/js/jquery.ui.touch-punch.min.js https://raw.github.com/furf/jquery-ui-touch-punch/master/jquery.ui.touch-punch.min.js && echo " -> jquery.ui.touch-punch OK!"
+wget -q -nc -O tiles/js/jquery-1.12.4.min.js "http://code.jquery.com/jquery-1.12.4.min.js" && echo " -> jquery OK!"
+wget -q -nc -O tiles/js/jquery-ui-1.12.1.min.js "https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" && echo " -> jquery-ui OK!"
+wget -q -nc -O tiles/js/jquery.ui.touch-punch.min.js "https://raw.githubusercontent.com/furf/jquery-ui-touch-punch/master/jquery.ui.touch-punch.min.js" && echo " -> jquery.ui.touch-punch OK!"
 wget -q -nc -O tiles/img/zm.png https://raw.githubusercontent.com/ubugnu/jquery-ui/master/zm.png && echo " -> zoom out image OK!"
 wget -q -nc -O tiles/img/cross.png https://raw.githubusercontent.com/ubugnu/jquery-ui/master/cross.png && echo " -> cross image OK!"
 wget -q -nc -O tiles/img/zp.png https://raw.githubusercontent.com/ubugnu/jquery-ui/master/zp.png && echo " -> zoom in image OK!"
