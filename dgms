@@ -800,7 +800,7 @@ function bootstrap_status {
 
 function get_IP {
 	PORT="$@"
-	echo -e 'authenticate ""\nGETINFO address' | nc localhost 1${PORT} | grep 'address=' | sed 's/250-address=//'
+	echo -e 'authenticate ""\nGETINFO address' | nc localhost 1${PORT} -q 0 | grep 'address=' | sed 's/250-address=//'
 }
 
 function switch_proxy {
@@ -816,7 +816,7 @@ function valid_image {
 	[[ "$ERROR" =~ 'error' ]] && echo false || echo true
 }
 
-echo " > Cheking for necessary files ..."
+echo " > Checking for necessary files ..."
 
 mkdir -p tiles
 mkdir -p tiles/js
@@ -914,13 +914,18 @@ EOL
 				[[ -f tiles/h/$z/$x/$y.png ]] && ! $(valid_image tiles/h/$z/$x/$y.png) && rm tiles/h/$z/$x/$y.png && echo -e " > tiles/h/$z/$x/$y.png not a valid image format, \e[31m\e[1mremoved\e[0m      " && printf "\033[A"
 				[[ -f tiles/s/$z/$x/$y.jpg ]] && echo -e " >>> tiles/s/$z/$x/$y.jpg already exists, \e[34m\e[1mskipping ...\e[0m        " && printf "\033[A"
 				[[ -f tiles/h/$z/$x/$y.png ]] && echo -e " >>> tiles/h/$z/$x/$y.png already exists, \e[34m\e[1mskipping ...\e[0m        " && printf "\033[A"
-					while [[ $(jobs | wc -l) -gt $max_connections ]]; do
+					while [[ $(jobs -r | wc -l) -gt $max_connections ]]; do
 						sleep 0.1
 					done
 				[[ ! -f tiles/s/$z/$x/$y.jpg ]] && twget "http://mts0.google.com/vt/lyrs=s&hl=$language&src=app&x=$x&y=$y&z=$z&s=Galileo" 1 &
 				[[ ! -f tiles/h/$z/$x/$y.png ]] && ! $only_sat && twget "http://mts0.google.com/vt/lyrs=h&hl=$language&src=app&x=$x&y=$y&z=$z&s=Galileo" 1 &
 			done
 		done
+	done
+
+	# Wait for all pending jobs before exiting
+	while [[ $(jobs -r | wc -l) -gt 0 ]]; do
+		sleep 0.1
 	done
 	exit 0
 else
