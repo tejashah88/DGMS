@@ -784,13 +784,13 @@ mkdir -p tiles/h
 wget -q -nc -O tiles/js/jquery-1.12.4.min.js "http://code.jquery.com/jquery-1.12.4.min.js" && echo " -> jquery OK!"
 wget -q -nc -O tiles/js/jquery-ui-1.12.1.min.js "https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" && echo " -> jquery-ui OK!"
 wget -q -nc -O tiles/js/jquery.ui.touch-punch.min.js "https://raw.githubusercontent.com/furf/jquery-ui-touch-punch/master/jquery.ui.touch-punch.min.js" && echo " -> jquery.ui.touch-punch OK!"
-wget -q -nc -O tiles/img/zm.png https://raw.githubusercontent.com/ubugnu/jquery-ui/master/zm.png && echo " -> zoom out image OK!"
-wget -q -nc -O tiles/img/cross.png https://raw.githubusercontent.com/ubugnu/jquery-ui/master/cross.png && echo " -> cross image OK!"
-wget -q -nc -O tiles/img/zp.png https://raw.githubusercontent.com/ubugnu/jquery-ui/master/zp.png && echo " -> zoom in image OK!"
-wget -q -nc -O tiles/img/blank.jpg https://raw.githubusercontent.com/ubugnu/jquery-ui/master/blank.jpg && echo " -> background image OK!"
-wget -q -nc -O tiles/img/transparent.png https://raw.githubusercontent.com/ubugnu/jquery-ui/master/transparent.png && echo " -> transparent image OK!"
-wget -q -nc -O tiles/img/404.jpg https://raw.githubusercontent.com/ubugnu/jquery-ui/master/404.jpg && echo " -> 404 jpg image OK!"
-wget -q -nc -O tiles/img/404.png https://raw.githubusercontent.com/ubugnu/jquery-ui/master/404.png && echo " -> 404 png image OK!"
+wget -q -nc -O tiles/img/zm.png "http://downloadicons.net/sites/default/files/zoom-out-icon-22851.png" && echo " -> zoom out image OK!"
+wget -q -nc -O tiles/img/cross.png "http://pngriver.com/wp-content/uploads/2017/12/transparent-target-aim-png-image.png" && echo " -> cross image OK!"
+wget -q -nc -O tiles/img/zp.png "https://www.pngarts.com/files/1/Zoom-PNG-Image-with-Transparent-Background.png" && echo " -> zoom in image OK!"
+wget -q -nc -O tiles/img/blank.jpg "https://via.placeholder.com/256" && echo " -> background image OK!"
+wget -q -nc -O tiles/img/transparent.png "https://storage.googleapis.com/drivetexas/mask/7/28/52.png" && echo " -> transparent image OK!"
+wget -q -nc -O tiles/img/404.jpg "https://dummyimage.com/256/ffffff/f00.jpg&text=Not+found" && echo " -> 404 jpg image OK!"
+wget -q -nc -O tiles/img/404.png "https://dummyimage.com/256/ffffff/f00.png&text=Not+found" && echo " -> 404 png image OK!"
 
 TOTALTILES=0
 
